@@ -1,0 +1,24 @@
+{
+  "name": "graphql-course",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MsNiyaJ/graphql-course.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MsNiyaJ/graphql-course/issues"
+  },
+  "homepage": "https://github.com/MsNiyaJ/graphql-course#readme",
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.6"
+  }
+}
