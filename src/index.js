@@ -4,12 +4,25 @@ import { GraphQLServer } from "graphql-yoga";
 // (!) - Indicates this query is mandatory
 // All type definitions start with a capital letter
 
+// Demo user data
+const users = [
+    {id: 1, name: 'Shaniya', email: 'Shaniya@email.com', age: 22},
+    {id: 2, name: 'Karen', email: 'beepbop@email.com'},
+    {id: 3, name: 'Plankton', email: 'secretformula@email.com'},
+]
+
+// Demo post data
+const posts = [
+    {id: 1, title: "Hey", body: "Hello World!", published: true},
+    {id: 2, title: "Goodbye", body: "Goodbye World!", published: true},
+    {id: 3, title: "Im back", body: "Hello Again", published: false}
+]
+
 // Type definition schema
 const typeDefs = `
     type Query{
-       greeting(name: String, position: String): String!
-       add(numbers: [Float!]!): Float!
-       grades: [Int!]!
+       users(query: String): [User!]! 
+       posts(query: String): [Post!]!
        me: User! 
        post: Post!  
     }
@@ -32,26 +45,28 @@ const typeDefs = `
 // Resolvers
 const resolvers = {
     Query: {
-        greeting(parent, args, ctx, info){
-            if(args.name && args.position){
-                return `Hello ${args.name}! You are my favorite ${args.position}`
+        users(parent, args, ctx, info){
+            if(!args.query){
+                return users;
             }
-            console.log(args.name);
-            return 'Hello!'
+
+            return users.filter((user) => {
+                return user.name.toLowerCase().includes(args.query.toLowerCase())
+            })
         }, 
 
-        add(parent, args, ctx, info){
-            if(args.numbers.length === 0)
-                return 0;
-            
-            return args.numbers.reduce((sum, currentValue) => {
-                return sum += currentValue
-            }, 0)
-        },
+        posts(parent, args, ctx, info){
+            if(!args.query){
+                return posts;
+            }
 
-        grades(parent, args, ctx, info){
-            return [99, 80, 93]
-        },
+            // Filters all posts with a query string that matches the title
+            return posts.filter((post) => {
+                return post.title.toLowerCase().includes(args.query.toLowerCase()) ||
+                post.body.toLowerCase().includes(args.query.toLowerCase()) 
+            })
+
+        }, 
 
         me(){
             return {
