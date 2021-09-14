@@ -60,10 +60,11 @@ const resolvers = {
                 return posts;
             }
 
-            // Filters all posts with a query string that matches the title
+            // Filters all posts with a query string that matches the title or post
             return posts.filter((post) => {
-                return post.title.toLowerCase().includes(args.query.toLowerCase()) ||
-                post.body.toLowerCase().includes(args.query.toLowerCase()) 
+                let titleMatch = post.title.toLowerCase().includes(args.query.toLowerCase())
+                let postMatch = post.body.toLowerCase().includes(args.query.toLowerCase()) 
+                return titleMatch || postMatch
             })
 
         }, 
