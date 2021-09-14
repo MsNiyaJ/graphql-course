@@ -1,21 +1,25 @@
 import { GraphQLServer } from "graphql-yoga";
 
-// 5 Scalar Types: String, Boolean, Int, Float, ID      (A type that stores a single value)
-// (!) - Indicates this query is mandatory
-// All type definitions start with a capital letter
-
 // Demo user data
 const users = [
-    {id: 1, name: 'Shaniya', email: 'Shaniya@email.com', age: 22},
-    {id: 2, name: 'Karen', email: 'beepbop@email.com'},
-    {id: 3, name: 'Plankton', email: 'secretformula@email.com'},
+    {id: 1, name: 'Shaniya', email: 'Shaniya@email.com', age: 22, comments: '315'},
+    {id: 2, name: 'Karen', email: 'beepbop@email.com', comments: '317'},
+    {id: 3, name: 'Plankton', email: 'secretformula@email.com', comments: '318'},
 ]
 
 // Demo post data
 const posts = [
-    {id: 1, title: "Hey", body: "Hello World!", published: true},
-    {id: 2, title: "Goodbye", body: "Goodbye World!", published: true},
-    {id: 3, title: "Im back", body: "Hello Again", published: false}
+    {id: 1, title: "Hey", body: "Hello World!", published: true, author: '1', comments: '315'},
+    {id: 2, title: "Goodbye", body: "Goodbye World!", published: true, author: '2', comments: '317'},
+    {id: 3, title: "Im back", body: "Hello Again", published: false, author: '3', comments: '318'}
+]
+
+// Demo comment data
+const comments = [
+    {id: 315, text: "You look amazing!", author: '1', post: '1'},
+    // {id: 316, text: "Look another comment!", author: '1'},
+    {id: 317, text: "And another one!", author: '2', post: '2'},
+    {id: 318, text: "The formula will be mine!", author: '3', post: '3'}
 ]
 
 // Type definition schema
@@ -23,6 +27,7 @@ const typeDefs = `
     type Query{
        users(query: String): [User!]! 
        posts(query: String): [Post!]!
+       comments: [Comment!]!
        me: User! 
        post: Post!  
     }
@@ -32,6 +37,8 @@ const typeDefs = `
         name: String!
         email: String!
         age: Int
+        posts: [Post!]!
+        comments: [Comment!]
     }
 
     type Post {
@@ -39,6 +46,15 @@ const typeDefs = `
         title: String!
         body: String!
         published: Boolean!
+        author: User!
+        comments: [Comment!]!
+    }
+
+    type Comment {
+        id: ID!
+        text: String!
+        author: User!
+        post: Post!
     }
 `
 
@@ -69,6 +85,10 @@ const resolvers = {
 
         }, 
 
+        comments(parent, args, ctx, info){
+            return comments
+        },
+
         me(){
             return {
                 id: '123098',
@@ -85,6 +105,42 @@ const resolvers = {
                 body: 'Life is a rollercoaster',
                 published: false
             }
+        }
+    }, 
+    Post: {
+        author(parent, args, ctx, info) {
+            return users.find((user) => {
+                return user.id == parent.author
+            })
+        }, 
+        comments(parent, args, ctx, info){
+            return comments.filter((comment) => {
+                return comment.id == parent.comments
+            })
+        }
+    },
+    User: {
+        posts(parent, args, ctx, info){
+            return posts.filter((post) => {
+                return post.author == parent.id
+            })
+        },
+        comments(parent, args, ctx, info){
+            return comments.filter((comments) => {
+                return comments.id == parent.comments;
+            })
+        }
+    },
+    Comment: {
+        author(parent, args, ctx, info){
+            return users.find((user) => {
+                return user.id == parent.author
+            })
+        }, 
+        post(parent, args, ctx, info){
+            return posts.find((post) => {
+                return post.id == parent.post
+            })
         }
     }
 }
